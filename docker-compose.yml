@@ -62,3 +62,5 @@ services:
       - traefik-public
 networks:
   traefik-public:
+    name: traefik-public
+    external: true
