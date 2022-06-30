@@ -10,13 +10,13 @@ services:
       - --providers.docker
       - --providers.docker.exposedByDefault=false
       - --api
-      - --certificatesresolvers.le.acme.email=${TRAEFIK_SSLEMAIL?Variable not set}
+      - --certificatesresolvers.le.acme.email=${TRAEFIK_SSL_EMAIL?Variable not set}
       - --certificatesresolvers.le.acme.storage=./letsencrypt/acme.json
       # - --certificatesresolvers.le.acme.tlschallenge=true
       - --certificatesresolvers.le.acme.dnschallenge.provider=duckdns
       - --entrypoints.websecure.http.tls.certResolver=le
-      - --entrypoints.websecure.http.tls.domains[0].main=login-example.duckdns.org
-      - --entrypoints.websecure.http.tls.domains[0].sans=*.login-example.duckdns.org
+      - --entrypoints.websecure.http.tls.domains[0].main=${PRIMARY_DOMAIN}
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.${PRIMARY_DOMAIN}
     ports:
       - "80:80"
       - "443:443"
@@ -25,6 +25,9 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
+    restart: unless-stopped
+    networks:
+      - traefik-public
     labels:
       - "traefik.enable=true"
       # Dashboard
@@ -33,7 +36,7 @@ services:
       - "traefik.http.routers.traefik.tls=true"
       - "traefik.http.routers.traefik.tls.certresolver=le"
       - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.traefik.middlewares=authtraefik"
+      # - "traefik.http.routers.traefik.middlewares=authtraefik"
       # - "traefik.http.middlewares.authtraefik.basicauth.users=devAdmin:devPass"
       # global redirect to https
       - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
@@ -41,9 +44,7 @@ services:
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       # middleware redirect
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
-    restart: unless-stopped
-    networks:
-      - traefik-public
+
   my-app:
     image: containous/whoami:v1.3.0
     hostname: whoami
@@ -52,7 +53,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.my-app.rule=Host(`whoami.${PRIMARY_DOMAIN}`)"
-      - "traefik.http.routers.my-app.middlewares=auth"
+      # - "traefik.http.routers.my-app.middlewares=auth"
       - "traefik.http.routers.my-app.entrypoints=websecure"
       - "traefik.http.routers.my-app.tls=true"
       - "traefik.http.routers.my-app.tls.certresolver=le"
