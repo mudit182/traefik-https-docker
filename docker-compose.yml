@@ -20,6 +20,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      - DUCKDNS_TOKEN=${DUCKDNS_TOKEN?Variable not set}
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - "./letsencrypt:/letsencrypt"
