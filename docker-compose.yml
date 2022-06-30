@@ -11,14 +11,14 @@ services:
       - --providers.docker.exposedByDefault=false
       - --api
       - --certificatesresolvers.le.acme.email=${TRAEFIK_SSLEMAIL?Variable not set}
-      - --certificatesresolvers.le.acme.storage=./acme.json
+      - --certificatesresolvers.le.acme.storage=./letsencrypt/acme.json
       - --certificatesresolvers.le.acme.tlschallenge=true
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./acme.json:/acme.json"
+      - "./letsencrypt:/letsencrypt"
     labels:
       - "traefik.enable=true"
       # Dashboard
@@ -28,7 +28,7 @@ services:
       - "traefik.http.routers.traefik.tls.certresolver=le"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.middlewares=authtraefik"
-      - "traefik.http.middlewares.authtraefik.basicauth.users=devAdmin:$2y$05$h9OxLeY20/5uiXjfPgdRxuFlrfqBf2QifYDgrwsR6rAEgX3/dpOGq" # user:devAdmin, password:devto
+      - "traefik.http.middlewares.authtraefik.basicauth.users=devAdmin:devPass"
       # global redirect to https
       - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
       - "traefik.http.routers.http-catchall.entrypoints=web"
@@ -50,7 +50,7 @@ services:
       - "traefik.http.routers.my-app.entrypoints=websecure"
       - "traefik.http.routers.my-app.tls=true"
       - "traefik.http.routers.my-app.tls.certresolver=le"
-      - "traefik.http.middlewares.auth.basicauth.users=devAdmin:$2y$05$h9OxLeY20/5uiXjfPgdRxuFlrfqBf2QifYDgrwsR6rAEgX3/dpOGq" # user:devAdmin, password:devto
+      - "traefik.http.middlewares.auth.basicauth.users=devAdmin:devPass"
     networks:
       - traefik-public
 networks:
