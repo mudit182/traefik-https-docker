@@ -12,7 +12,11 @@ services:
       - --api
       - --certificatesresolvers.le.acme.email=${TRAEFIK_SSLEMAIL?Variable not set}
       - --certificatesresolvers.le.acme.storage=./letsencrypt/acme.json
-      - --certificatesresolvers.le.acme.tlschallenge=true
+      # - --certificatesresolvers.le.acme.tlschallenge=true
+      - --certificatesresolvers.le.acme.dnschallenge.provider=duckdns
+      - --entrypoints.websecure.http.tls.certResolver=le
+      - --entrypoints.websecure.http.tls.domains[0].main=login-example.duckdns.org
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.login-example.duckdns.org
     ports:
       - "80:80"
       - "443:443"
@@ -28,7 +32,7 @@ services:
       - "traefik.http.routers.traefik.tls.certresolver=le"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       - "traefik.http.routers.traefik.middlewares=authtraefik"
-      - "traefik.http.middlewares.authtraefik.basicauth.users=devAdmin:devPass"
+      # - "traefik.http.middlewares.authtraefik.basicauth.users=devAdmin:devPass"
       # global redirect to https
       - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
       - "traefik.http.routers.http-catchall.entrypoints=web"
@@ -50,7 +54,7 @@ services:
       - "traefik.http.routers.my-app.entrypoints=websecure"
       - "traefik.http.routers.my-app.tls=true"
       - "traefik.http.routers.my-app.tls.certresolver=le"
-      - "traefik.http.middlewares.auth.basicauth.users=devAdmin:devPass"
+      # - "traefik.http.middlewares.auth.basicauth.users=devAdmin:devPass"
     networks:
       - traefik-public
 networks:
