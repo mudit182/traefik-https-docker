@@ -34,7 +34,7 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`dashboard.${PRIMARY_DOMAIN}`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls=true"
-      - "traefik.http.routers.traefik.tls.certresolver=le"
+      # - "traefik.http.routers.traefik.tls.certresolver=le"
       - "traefik.http.routers.traefik.entrypoints=websecure"
       # - "traefik.http.routers.traefik.middlewares=authtraefik"
       # - "traefik.http.middlewares.authtraefik.basicauth.users=devAdmin:devPass"
@@ -45,21 +45,21 @@ services:
       # middleware redirect
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
-  my-app:
-    image: containous/whoami:v1.3.0
-    hostname: whoami
-    container_name: whoami
-    restart: unless-stopped
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.my-app.rule=Host(`whoami.${PRIMARY_DOMAIN}`)"
-      # - "traefik.http.routers.my-app.middlewares=auth"
-      - "traefik.http.routers.my-app.entrypoints=websecure"
-      - "traefik.http.routers.my-app.tls=true"
-      - "traefik.http.routers.my-app.tls.certresolver=le"
-      # - "traefik.http.middlewares.auth.basicauth.users=devAdmin:devPass"
-    networks:
-      - traefik-public
+  # my-app:
+  #   image: containous/whoami:v1.3.0
+  #   hostname: whoami
+  #   container_name: whoami
+  #   restart: unless-stopped
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.my-app.rule=Host(`whoami.${PRIMARY_DOMAIN}`)"
+  #     # - "traefik.http.routers.my-app.middlewares=auth"
+  #     - "traefik.http.routers.my-app.entrypoints=websecure"
+  #     - "traefik.http.routers.my-app.tls=true"
+  #     # - "traefik.http.routers.my-app.tls.certresolver=le"
+  #     # - "traefik.http.middlewares.auth.basicauth.users=devAdmin:devPass"
+  #   networks:
+  #     - traefik-public
 networks:
   traefik-public:
     name: traefik-public
